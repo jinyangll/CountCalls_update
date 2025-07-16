@@ -1,0 +1,5 @@
+flask
+flask-cors
+pandas
+gunicorn
+xlrd==1.2.0
