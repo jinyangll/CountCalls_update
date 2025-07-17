@@ -3,8 +3,10 @@ import React from 'react'
 function PhoneNumber(props){
     return(
         <div className='phoneNumber'>
-            {props.item.text}
-            <button className="xBtn" onClick={()=>props.deleteItem(props.id)}>x</button>
+            <pre>{props.item.text} {props.item.name} <button className="xBtn" 
+                    onClick={()=>props.deleteItem(props.id)}>x</button></pre>
+            
+            
         </div>
 
     )
