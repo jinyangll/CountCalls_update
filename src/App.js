@@ -32,10 +32,11 @@ function App() {
       return;
     }
 
-    const newItem = { id: nextId.current, text: cleaned };
+    const newItem = { id: nextId.current, text: cleaned, name: nameValue};
     setAllNumber([...allNumber, newItem]);
     nextId.current += 1;
     setInputValue("");
+    setNameValue("");
   };
 
   const deleteItem = (id) => {
@@ -72,6 +73,7 @@ function App() {
     setErrorMessage("");
     setIsLoading(true);
     setResult([]);
+    
 
     const formData = new FormData();
     formData.append("file", selectedFile);
@@ -121,11 +123,13 @@ function App() {
 
   return (
     <div className="box">
-      <h1>Count Calls</h1>
+      <div className="titleBox">
+        <div className="titleCountCall">Count Calls</div>
+      </div>
       <br />
       <p>
 
-        <details>
+        <details className="howToUse">
         <summary>사용방법</summary>
         <br/>
         1. 전화번호는 010과 -를 제외한 8자리를 입력하세요.<br />
@@ -138,15 +142,14 @@ function App() {
         입력할 경우 전화번호 옆에 이름이 함께 표시됩니다.<br/><br/>
         
         3. 엑셀 파일 형식이 xlsx가 맞는지 확인하세요. <br/>
-        아닐경우 오류가 날 수 있습니다. <br/> <br/>
+        아닐경우 오류가 발생할 수 있습니다. <br/> <br/>
         4. 약 1분 정도 소요될 수 있습니다. <br/>
         그 이상 초과될 경우 재실행해주세요.
         </details>
         
       </p>
 
-      <br/>
-      <hr style={{width:600}}/>
+      <hr/>
       <br/>
       <input
         type="text"
@@ -164,6 +167,9 @@ function App() {
       value={nameValue}
       className="nameBox"
       placeholder="  이름/별칭"
+      onKeyDown={(event) => {
+          if (event.key === "Enter") addNum();
+        }}
       onChange={(event)=>setNameValue(event.target.value)}
       />
 
@@ -175,7 +181,8 @@ function App() {
 
 
       <Board allNumber={allNumber} onDelete={deleteItem} />
-
+      <br/>
+      <hr/>
       <div style={{ marginTop: '20px', marginBottom: '20px' }}>
         <label htmlFor="excel-upload" style={{ display: 'block', marginBottom: '5px' }}>
           엑셀 파일 업로드 (.xlsx)
@@ -195,7 +202,7 @@ function App() {
       </div>
 
       {errorMessage && (
-        <div style={{ color: 'red', border: '1px solid red', padding: '10px', borderRadius: '5px', marginBottom: '15px' }}>
+        <div className="errorDiv">
           <strong>오류:</strong> {errorMessage}
         </div>
       )}
@@ -209,14 +216,18 @@ function App() {
       </button>
 
       {isLoading && (
-        <div style={{ marginTop: '10px', textAlign: 'center', color: '#555' }}>
+        <div style={{ marginTop: '10px', color: '#555' }}>
           데이터를 분석하고 있습니다...
         </div>
       )}
 
+      <div style={{ height: "100px" }}></div>
+
       {result.length > 0 && (
         <div className="result-box" style={{ overflowX: "scroll", marginTop: '20px' }}>
-          <h2>분석 결과</h2>
+          
+        <h2>분석 결과</h2>
+      
           <table border="1" style={{ borderCollapse: 'collapse' , minWidth: 'max-content'}}>
             <thead>
               <tr>
