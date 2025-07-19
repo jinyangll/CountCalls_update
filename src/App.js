@@ -56,6 +56,7 @@ function App() {
     }
   };
 
+
   const sendToServer = () => {
     console.log("sendToServer 호출됨");
     console.log("현재 selectedFile 상태:", selectedFile);
@@ -77,7 +78,8 @@ function App() {
 
     const formData = new FormData();
     formData.append("file", selectedFile);
-    formData.append("numbers", JSON.stringify(allNumber.map((item) => item.text)));
+    formData.append("numbers", JSON.stringify(allNumber.map(
+      item => ({number: item.text, name: item.name}))));
 
     for (let pair of formData.entries()) {
       console.log(pair[0]+ ', ' + pair[1]);
@@ -127,7 +129,7 @@ function App() {
         <div className="titleCountCall">Count Calls</div>
       </div>
       <br />
-      <p>
+      <div>
 
         <details className="howToUse">
         <summary>사용방법</summary>
@@ -150,7 +152,7 @@ function App() {
         그 이상 초과될 경우 재실행해주세요.
         </details>
         
-      </p>
+      </div>
       <br/>
       <hr/>
       <br/>
