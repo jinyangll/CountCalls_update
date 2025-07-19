@@ -4,6 +4,7 @@ import pandas as pd
 import json
 import os
 
+
 app = Flask(__name__)
 CORS(app)
 
@@ -16,6 +17,7 @@ def analyze():
     if 'file' not in request.files:
         return jsonify({"error": "엑셀 파일이 업로드되지 않았습니다."}), 400
     file = request.files['file']
+    
     if file.filename == '':
         return jsonify({"error": "선택된 엑셀 파일이 없습니다."}), 400
 
@@ -27,6 +29,8 @@ def analyze():
 
     try:
         all_input = json.loads(all_input_str)
+
+        all_input = [f"010-{num[:4]}-{num[4:]}" for num in all_input]
         if not isinstance(all_input, list):
             return jsonify({"error": "전화번호 목록 형식이 올바르지 않습니다. (리스트 형태여야 함)"}), 400
     except json.JSONDecodeError:
@@ -45,8 +49,8 @@ def analyze():
 
     #####
     
-    col_receive = next((col for col in df.columns if '착신자(전화번호)' in col.strip()), None)
-    col_send = next((col for col in df.columns if '발신자(전화번호)' in col.strip()), None)
+    col_receive = next((col for col in df.columns if '착신자' in col.strip()), None)
+    col_send = next((col for col in df.columns if '발신자' in col.strip()), None)
 
     if col_receive is None or col_send is None:
         return jsonify({"error": "엑셀파일에 '착신자' 또는 '발신자'가 들어가는 열이 없습니다."}), 400
@@ -54,11 +58,16 @@ def analyze():
     df = df[[col_receive, col_send]].copy()
     df.columns = ['receive', 'send']
 
-    df['receive'] = df['receive'].astype(str).str.replace('-', '', regex=False)
-    df['send'] = df['send'].astype(str).str.replace('-', '', regex=False)
+    df['receive'] = df['receive'].astype(str)
+    df['send'] = df['send'].astype(str)
+    # df['receive'] = df['receive'].astype(str).str.replace('-', '', regex=False)
+    # df['send'] = df['send'].astype(str).str.replace('-', '', regex=False)
 
-    df['receive_tail'] = df['receive'].str[-8:]
-    df['send_tail'] = df['send'].str[-8:]
+    # df['receive_tail'] = df['receive'].str[-8:]
+    # df['send_tail'] = df['send'].str[-8:]
+
+    df['receive_tail'] = df['receive']
+    df['send_tail'] = df['send']
 
     all_phone_numbers = pd.Index(df['receive_tail']).append(pd.Index(df['send_tail'])).unique()
     result_df = pd.DataFrame({'phone_number': all_phone_numbers})
@@ -72,6 +81,8 @@ def analyze():
         senders = df.loc[cond_recv, 'send_tail'].value_counts()
         receivers = df.loc[cond_send, 'receive_tail'].value_counts()
         total = senders.add(receivers, fill_value=0).astype(int)
+
+        # formatted_special = f"010-{special[:4]}-{special[4:]}"  
 
         temp_df = pd.DataFrame({
             'phone_number': total.index,
