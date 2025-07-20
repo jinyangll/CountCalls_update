@@ -6,7 +6,8 @@ import os
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+# CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app)
 
 @app.route("/", methods=["GET"])
 def home():
@@ -103,7 +104,8 @@ def analyze():
 
     result_df = result_df.fillna(0).astype({col: int for col in result_df.columns if col != 'phone_number'})
 
-    result_df = result_df[~result_df['phone_number'].isin(all_input)].copy()
+    special_numbers_only = [item["number"] for item in all_input]
+    result_df = result_df[~result_df['phone_number'].isin(special_numbers_only)].copy()
 
     total_cols = [col for col in result_df.columns if col.endswith('_총')] 
     result_df['total'] = result_df[total_cols].sum(axis=1)
