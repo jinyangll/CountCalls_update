@@ -264,7 +264,7 @@ const exportToExcel = () => {
 
       {result.length > 0 && (
         <div className="result-box" style={{ overflowX: "scroll", marginTop: '20px' }}>
-
+        <hr/>
         <h2>분석 결과</h2>
         <div className="excelBtnWrapper">
            <button className="excelButton" onClick={exportToExcel}>엑셀 파일 저장</button>
