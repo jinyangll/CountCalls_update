@@ -108,9 +108,18 @@ def analyze():
     total_cols = [col for col in result_df.columns if col.endswith('_총')] 
     result_df['total'] = result_df[total_cols].sum(axis=1)
 
-    result_df = result_df.sort_values(by='total', ascending=False).reset_index(drop=True)
+    result_df['special_contact_count'] = result_df[total_cols].apply(lambda row: (row > 0).sum(), axis=1)
+    # total 수 기준으로 desc 정렬
+    # result_df = result_df.sort_values(by='total', ascending=False).reset_index(drop=True)
+
+    # 복합정렬 - special_contact_count기준 desc, total기준 desc
+    result_df = result_df.sort_values(
+            by=['special_contact_count', 'total'],
+            ascending=[False, False]
+        ).reset_index(drop=True)
 
     return jsonify(result_df.to_dict(orient="records"))
+
 
 
 if __name__ == "__main__":
